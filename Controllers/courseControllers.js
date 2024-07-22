@@ -31,9 +31,9 @@ export const getAllCourses = catchAsyncError( async (req , resp, next ) => {
 
 export const createCourse = catchAsyncError( async (req , resp, next ) => {
   
-    const {title, description, category, createdBy } = req.body;
+    const {title, description, price, category, createdBy } = req.body;
     
-    if(! title || !description || !category || !createdBy) return next( new ErrorHandler("Please fill all the fields", 400))
+    if(! title || !description || !price || !category || !createdBy) return next( new ErrorHandler("Please fill all the fields", 400))
 
     const file = req.file;
     // console.log(file);
@@ -44,7 +44,7 @@ export const createCourse = catchAsyncError( async (req , resp, next ) => {
     
 
     await Course.create({
-        title, description, category , createdBy,
+        title, description, price, category , createdBy,
         poster:{
             public_id: mycloud.public_id,
             url:mycloud. secure_url,
