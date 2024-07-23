@@ -14,7 +14,7 @@ router.route("/createcourse").post(isAuthenticated, authorizeAdmin, singleUpload
 
 // get add lecture . delete couses , det couses details
 
-router.route("/course/:id")
+router.route("/course/:id") 
  .get(isAuthenticated, getCourseLectures)
  .post(isAuthenticated, authorizeAdmin, singleUpload, addLecture)
  .delete(isAuthenticated, authorizeAdmin, deleteCourse )
