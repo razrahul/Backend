@@ -30,10 +30,16 @@ const schema = new mongoose.Schema({
     default: "user",
   },
 
-  subscription: {
-    id: String,
-    status: String,
-  },
+  subscription: [
+    {
+      id: String,
+      course: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Course",
+      },
+      status: String,
+    }
+],
 
   avatar: {
     public_id: {

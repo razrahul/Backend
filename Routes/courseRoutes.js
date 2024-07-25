@@ -1,6 +1,6 @@
 import express from 'express'
 import {deleteLecture, deleteCourse, addLecture, getCourseLectures, getAllCourses, createCourse}  from '../Controllers/courseControllers.js'
-import {authorizeAdmin, isAuthenticated} from '../Middlewares/auth.js'
+import {authorizeAdmin, isAuthenticated, authorizeSubscribers} from '../Middlewares/auth.js'
 
 import singleUpload from '../Middlewares/multer.js'
 
@@ -15,7 +15,7 @@ router.route("/createcourse").post(isAuthenticated, authorizeAdmin, singleUpload
 // get add lecture . delete couses , det couses details
 
 router.route("/course/:id") 
- .get(isAuthenticated, getCourseLectures)
+ .get(isAuthenticated, authorizeSubscribers, getCourseLectures)
  .post(isAuthenticated, authorizeAdmin, singleUpload, addLecture)
  .delete(isAuthenticated, authorizeAdmin, deleteCourse )
 

@@ -1,6 +1,7 @@
 import app from './app.js';
 import { connectDB } from './Config/database.js'
 import cloudinary from 'cloudinary'
+import Razorpay from 'razorpay';
 
 connectDB()
 
@@ -10,6 +11,11 @@ cloudinary.v2.config({
     api_secret:process.env.CLOUDINARY_CLIENT_SECRET
 })
 
+
+export const instance = new Razorpay({
+    key_id: process.env.RAZORPAY_API_KEY,
+    key_secret: process.env.RAZORPAY_API_SECRET,
+});
 
 const PORT = process.env.PORT || 5000;
 
