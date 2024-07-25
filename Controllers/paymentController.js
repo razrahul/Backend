@@ -91,48 +91,48 @@ export const getRazorPayKey = catchAsyncError(async (req, res, next)=> {
 
 })
 
-export const cancelSubscription = catchAsyncError(async (req, res, next)=> {
-
-    const user = await User.findById(req.user._id);
-   
-    const course = await Course.findById(req.query.id);
-    if (!course) return next(new ErrorHandler("Invalid Course Id", 404));
-
-
-    const subscriptionId = user.subscription.id;
-
-    let refund =false;
-
-    await instance.subscriptions.cancel(subscriptionId);
-
-    const payment = await Payment.findOne({
-        razorpay_subscription_id: subscriptionId
-    })
-
-    const gap = Date.now() - payment.createdAt;
-
-    const refundTime = process.env.REFUND_DAYS * 24 * 60 * 60 * 1000;
-
-    if(refundTime > gap) {
+export const cancelSubscription = catchAsyncError(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.user._id);
+      if (!user) return next(new ErrorHandler("User not found", 404));
+  
+      const course = await Course.findById(req.query.id);
+      if (!course) return next(new ErrorHandler("Invalid Course Id", 404));
+  
+      const subscription = user.subscription.find(sub => sub.course.toString() === course._id.toString());
+      if (!subscription) return next(new ErrorHandler("Subscription not found", 404));
+  
+      const subscriptionId = subscription.id;
+      console.log(subscriptionId);
+      
+      let refund = false;
+  
+      await instance.subscriptions.cancel(subscriptionId);
+  
+      const payment = await Payment.findOne({ razorpay_subscription_id: subscriptionId });
+      if (!payment) return next(new ErrorHandler("Payment not found", 404));
+  
+      const gap = Date.now() - new Date(payment.createdAt).getTime();
+      const refundTime = process.env.REFUND_DAYS * 24 * 60 * 60 * 1000;
+  
+      if (refundTime > gap) {
         await instance.payments.refund(payment.razorpay_payment_id);
         refund = true;
-    }
-
-    const newsubscription = user.subscription.filter((item) => {
-        if (item.course.toString() !== course._id.toString()) return item;
-      });
-    
-    
-
-    await payment.deleteOne();
-
-    user.subscription = newsubscription;
-    user.save();
-
-    res.status(200).json({
+      }
+  
+      user.subscription = user.subscription.filter(sub => sub.course.toString() !== course._id.toString());
+  
+      await payment.deleteOne();
+  
+      await user.save();
+  
+      res.status(200).json({
         success: true,
-        message: refund ? "Subscription cancelled, You will receive full refund within 7 days" 
-                : "Subscription cancelled, No refund initiated as subscription was cancelled after 7 days"
-    })
-
-})
+        message: refund
+          ? "Subscription cancelled, You will receive full refund within 7 days"
+          : "Subscription cancelled, No refund initiated as subscription was cancelled after refund period"
+      });
+    } catch (error) {
+      next(new ErrorHandler(error.message, 500));
+    }
+  });
