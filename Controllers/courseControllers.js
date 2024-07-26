@@ -60,6 +60,20 @@ export const createCourse = catchAsyncError( async (req , resp, next ) => {
    
 })
 
+export const getCourseById = catchAsyncError( async (req , resp, next ) => {
+  
+
+  const courses = await Course.findById(req.params.id).select("-lectures");;
+
+  if(!courses) return next(new ErrorHandler("Course not found", 404))
+  
+     resp.status(200).json({
+         success: true,
+         courses,
+     })
+   
+})
+
 export const getCourseLectures = catchAsyncError( async (req , resp, next ) => {
   
     const course = await Course.findById(req.params.id);
