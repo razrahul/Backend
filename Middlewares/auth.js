@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import ErrorHandler from "../Utils/errorHandler.js";
 import { catchAsyncError } from "./catchAsyncError.js";
 import { User } from "../Models/User.js";
+import { Course } from "../Models/Course.js";
 
 export const isAuthenticated = catchAsyncError(async (req, res, next) => {
   const { token } = req.cookies;
@@ -15,14 +16,43 @@ export const isAuthenticated = catchAsyncError(async (req, res, next) => {
   next();
 });
 
-export const authorizeSubscribers = (req, res, next) => {
-  if (req.user.subscription.status !== "active" && req.user.role !== "admin")
+// export const authorizeSubscribers = async(req, res, next) => {
+//   const cousesId = req.params.id;
+//   const activeSubscriptions = req.user.subscription.filter(item => item.course.toString() === cousesId && item.status === "active");//item.status === "active"
+//   // console.log(req.user.subscription);
+//   // console.log(req.course);
+//   // const course = await Course.findById(req.params.id);
+
+//   // console.log(course);
+//   // console.log(req.params.id);
+  
+  
+//   //activeSubscriptions.length === 0
+//   console.log(activeSubscriptions);
+//   if (activeSubscriptions.length === 0 && req.user.role !== "admin")  //req.user.subscription.status !== "active"
+//     return next(
+//       new ErrorHandler(`Only Subscribers can acces this resource`, 403)
+//     );
+
+//   next();
+// };
+
+export const authorizeSubscribers = async (req, res, next) => {
+  const courseId = req.params.id;
+  const hasActiveSubscription = req.user.subscription.some(
+    item => item.course.toString() === courseId && item.status === "active"
+  );
+  // console.log(hasActiveSubscription);
+  
+  if (!hasActiveSubscription && req.user.role !== "admin") {
     return next(
-      new ErrorHandler(`Only Subscribers can acces this resource`, 403)
+      new ErrorHandler(`Only Subscribers can access this resource`, 403)
     );
+  }
 
   next();
 };
+
 
 export const authorizeAdmin = (req, res, next) => {
   if (req.user.role !== "admin")
