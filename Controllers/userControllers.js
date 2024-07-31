@@ -7,6 +7,7 @@ import crypto from 'crypto'
 import { Course } from "../Models/Course.js"
 import {v2 as cloudinary} from 'cloudinary'
 import getDataUri from '../Utils/dataUri.js'
+import { Stats } from '../Models/Stats.js'
 
 
 
@@ -328,3 +329,27 @@ export const deleteMyProfile = catchAsyncError(async (req, res, next ) =>{
         
     });
 })
+
+User.watch().on("change", async () => {
+    try {
+      const stats = await Stats.find({}).sort({ createdAt: "desc" }).limit(1);
+  
+      if (stats.length === 0) {
+        console.error('No stats document found.');
+        return;
+      }
+  
+      const subscriptionCount = await User.countDocuments({ "subscription.status": "active" });
+      const userCount = await User.countDocuments();
+  
+      stats[0].users = userCount;
+      stats[0].subscription = subscriptionCount;
+      stats[0].createdAt = new Date();
+  
+      await stats[0].save();
+    } catch (error) {
+      console.error('Error updating stats:', error);
+    }
+  });
+  
+  

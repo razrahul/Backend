@@ -1,5 +1,6 @@
 import express from 'express';
-import { contact, requestCourse } from '../Controllers/otherControllers.js';
+import { contact, requestCourse, getDashboardStats } from '../Controllers/otherControllers.js';
+import {isAuthenticated, authorizeAdmin } from '../Middlewares/auth.js';
 
 const router = express.Router();
 
@@ -11,6 +12,8 @@ router.route("/contact").post(contact)
 router.route("/requestcourse").post(requestCourse)
 
 // admin stack
+
+router.route("/admin/stats").get(isAuthenticated, authorizeAdmin, getDashboardStats )
 
 
 export default router;
