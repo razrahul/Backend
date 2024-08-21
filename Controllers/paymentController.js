@@ -251,6 +251,9 @@ export const buySubscription = catchAsyncError(async (req, res, next) => {
 
   if (user.role === 'admin') return next(new ErrorHandler("Admin can't buy subscription", 400));
 
+  const subscription = user.subscription.find(sub => sub.course.toString() === courseId.toString());
+  if (subscription) return next(new ErrorHandler("Course already purchased", 404));
+
   const { amount, currency = "INR" } = req.body;
   if (!amount || amount <= 0) return next(new ErrorHandler("Invalid amount", 400));
 
