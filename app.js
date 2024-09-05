@@ -27,6 +27,7 @@ app.use(
 
 app.use(cookieParser());
 
+app.options('*', cors());  // Handle preflight requests
 
 // Importing & using Routes
 import course from './Routes/courseRoutes.js';
