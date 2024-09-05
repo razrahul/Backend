@@ -10,12 +10,12 @@ config({
 });
 
 const app = express();
-app.use(cors()); // Allows all origins
+// app.use(cors()); // Enable CORS for all origins
 
-// app.use(cors({
-//     origin: process.env.Frontend_URL,
-//     credentials: true
-// }));
+app.use(cors({
+    origin: process.env.Frontend_URL,
+    credentials: true
+}));
 
 // using middlewares
 app.use(express.json());
