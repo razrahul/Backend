@@ -2,7 +2,7 @@ import express from 'express';
 import { config } from 'dotenv';
 import ErrorMiddleware from './Middlewares/Error.js'
 import cookieParser from 'cookie-parser';
-import cors from 'cors'
+import cors from 'cors';
 
 
 config({
@@ -10,12 +10,20 @@ config({
 });
 
 const app = express();
-app.use(cors("*")); // Enable CORS for all origins
 
-app.use(cors({
-    origin: process.env.Frontend_URL,
-    credentials: true
-}));
+const corsOptions = {
+    origin: '*', // Allows all origins
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    optionsSuccessStatus: 204,
+  };
+  
+
+app.use(cors(corsOptions)); // Enable CORS for all origins
+
+// app.use(cors({
+//     origin: process.env.Frontend_URL,
+//     credentials: true
+// }));
 
 // using middlewares
 app.use(express.json());
