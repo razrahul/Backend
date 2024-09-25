@@ -12,7 +12,7 @@ config({
 const app = express();
 
 const corsOptions = {
-    origin: '*', // Allows all origins
+    origin: ["*",], // Allows all origins
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     optionsSuccessStatus: 204,
   };
