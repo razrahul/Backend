@@ -10,7 +10,7 @@ config({
 });
 
 const app = express();
-// app.use(cors()); // Enable CORS for all origins
+app.use(cors("*")); // Enable CORS for all origins
 
 app.use(cors({
     origin: process.env.Frontend_URL,
